@@ -1,0 +1,36 @@
+{
+  "name": "projectmanagementapplication",
+  "version": "1.0.0",
+  "description": "A project managment application for begineers",
+  "keywords": [
+    "Backend",
+    "Project",
+    "Backend",
+    "API",
+    "Creation"
+  ],
+  "license": "ISC",
+  "author": "Mahidhar Boppana",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prettier": "3.6.2"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "mailgen": "^2.0.32",
+    "mongoose": "^8.18.0",
+    "nodemailer": "^7.0.12"
+  }
+}
