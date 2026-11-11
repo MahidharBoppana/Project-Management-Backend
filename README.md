@@ -1,90 +1,125 @@
-# Project-Management-Backend
+# 📋 Project Management Backend
 
-> A beginner-friendly Project Management API built with Node.js, Express, and MongoDB.
+> A beginner-friendly RESTful API for collaborative project management, built with **Node.js**, **Express 5**, and **MongoDB**.  
+> Features user authentication, role-based access control, projects, tasks with subtasks, project notes, file attachments, and email notifications.
 
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat&logo=nodedotjs)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-5-000000?style=flat&logo=express)](https://expressjs.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=flat&logo=mongodb)](https://www.mongodb.com/)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=nodedotjs)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-5-000000?style=for-the-badge&logo=express)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose%208-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=for-the-badge)](LICENSE)
 
-## Table of Contents
+---
+
+## 📖 Table of Contents
 
 - [About](#about)
-- 🚀 [Features](#features)
-- 🛠️ [Tech Stack](#tech-stack)
-- 📁 [Project Structure](#project-structure)
-- 🔧 [Installation & Setup](#installation--setup)
-- 🔐 [Environment Variables](#environment-variables)
-- ▶️ [Running the Server](#running-the-server)
-- 📬 [API Endpoints](#api-endpoints)
-- 🧪 [Testing](#testing)
-- 🤝 [Contributing](#contributing)
-- 📄 [License](#license)
+- [✨ Features](#-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [📁 Project Structure](#-project-structure)
+- [🚀 Quick Start](#-quick-start)
+- [🔐 Environment Variables](#-environment-variables)
+- [▶️ Running the Server](#️-running-the-server)
+- [📬 API Endpoints](#-api-endpoints)
+- [🧪 Try It (cURL Examples)](#-try-it-curl-examples)
+- [🔑 Roles & Permissions](#-roles--permissions)
+- [📦 Response & Error Format](#-response--error-format)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [👤 Author](#-author)
+
+---
 
 ## About
 
-**Project-Management-Backend** is the backend service for a project management application. It provides user authentication (registration, login, email verification, password reset), JWT-based session management with access & refresh tokens, and full project management with member roles.
+**Project Management Backend** is the server-side API for a team collaboration platform. It lets users register and verify their email, authenticate with JWT access & refresh tokens (stored in httpOnly cookies), reset passwords, and manage projects, members, tasks, subtasks, and notes with role-based permissions.
 
-## 🚀 Features
+<details>
+<summary><b>What the API can do</b></summary>
 
-### Authentication
+- **Auth:** register, login, logout, email verification, forgot/reset password, change password, refresh tokens, get current user, resend verification
+- **Projects:** CRUD projects, add/list/update/remove members with roles
+- **Tasks:** CRUD tasks, file attachments, status tracking (todo / in-progress / done), assignees
+- **Subtasks:** create, update, delete, mark complete
+- **Notes:** CRUD project notes (admin-only writes)
+- **System:** health-check endpoint
+</details>
+
+---
+
+## ✨ Features
+
+### 🔐 Authentication & Authorization
 - User registration with email verification
-- Login with JWT access & refresh tokens (httpOnly cookies)
+- Login with JWT access + refresh tokens (httpOnly cookies)
 - Logout (clears cookies)
 - Refresh access token
 - Forgot password & password reset via email
-- Change password (authenticated)
+- Change password (authenticated users)
 - Get current user profile
 - Resend email verification
+- Role-Based Access Control: `admin`, `project_admin`, `member`
 
-### Project Management
+### 📁 Project Management
 - Create, read, update, delete projects
-- Add members to a project by email
-- List project members with their roles
-- Update a member's role
-- Remove a member from a project
+- Invite members by email
+- List project members with roles
+- Update or remove a member's role
 
-### Security & Utilities
+### 📝 Tasks, Subtasks & Notes
+- Create tasks with title, description, assignee, and status
+- Track status: `todo` → `in_progress` → `done`
+- Multiple file attachments per task (stored in `public/images/`)
+- Subtasks with completion tracking
+- Project notes (admin-only create/update/delete)
+
+### 🛡️ Security & Utilities
 - Password hashing with bcrypt
 - Request validation with express-validator
 - CORS with credentials support
-- Centralized error & response handling (ApiError / ApiResponse)
-- Async route handler wrapper
-- Email sending via Nodemailer + Mailgen
+- Centralized `ApiResponse` / `ApiError` handling
+- Async route wrapper (`asyncHandler`)
+- Email sending via Nodemailer + Mailgen (Mailtrap)
+
+---
 
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| Runtime | Node.js (ESM / `"type": "module"`) |
+| Runtime | Node.js 18+ (ESM / `"type": "module"`) |
 | Web Framework | Express 5 |
 | Database | MongoDB with Mongoose 8 |
-| Auth | JSON Web Tokens (access + refresh) |
+| Authentication | JWT (access + refresh tokens) |
 | Password Hashing | bcrypt |
 | Validation | express-validator |
 | Email | Nodemailer + Mailgen |
-| Cookie parsing | cookie-parser |
+| Cookies | cookie-parser |
 | CORS | cors |
-| Dev tooling | nodemon, prettier |
+| File Uploads | multer |
+| Dev Tooling | nodemon, prettier |
+
+---
 
 ## 📁 Project Structure
 
-```
+```text
 Project-Management-Backend/
 ├── public/
-│   └── images/
+│   └── images/                # User-uploaded task attachments (gitignored)
 ├── src/
-│   ├── app.js                 # Express app setup & middleware
-│   ├── index.js               # Entry point (connects DB, starts server)
+│   ├── app.js                 # Express app + middleware setup
+│   ├── index.js               # Entry point (dotenv, DB connect, listen)
 │   ├── controllers/
-│   │   ├── auth.controller.js         # Auth logic (register, login, password, etc.)
-│   │   ├── healthcheck.controller.js  # Server health check
-│   │   └── project.controller.js      # Project & member CRUD
+│   │   ├── auth.controller.js         # Register, login, password, email verify, etc.
+│   │   ├── healthcheck.controller.js  # System health check
+│   │   ├── project.controller.js      # Project CRUD + member management
+│   │   ├── task.controller.js         # Tasks, subtasks, attachments
+│   │   └── projectNote.controller.js  # Project notes
 │   ├── db/
-│   │   └── index.js                   # MongoDB connection
+│   │   └── index.js                   # MongoDB (Mongoose) connection
 │   ├── middlewares/
 │   │   ├── auth.middleware.js         # JWT verification
-│   │   └── validator.middleware.js    # Request validation handler
+│   │   └── validator.middleware.js    # express-validator error handler
 │   ├── models/
 │   │   ├── user.model.js
 │   │   ├── projects.model.js
@@ -94,16 +129,20 @@ Project-Management-Backend/
 │   │   └── node.model.js
 │   ├── routes/
 │   │   ├── auth.routes.js
-│   │   └── healthcheck.routes.js
+│   │   ├── healthcheck.routes.js
+│   │   ├── project.routes.js
+│   │   ├── task.routes.js
+│   │   └── projectNote.routes.js
 │   ├── utils/
 │   │   ├── api-response.js
 │   │   ├── api-error.js
 │   │   ├── async-handler.js
-│   │   ├── constants.js
-│   │   └── mail.js
+│   │   ├── constants.js               # User roles & task statuses
+│   │   └── mail.js                    # Nodemailer + Mailgen sender
 │   └── validators/
-│       └── index.js
-├── .env
+│       └── index.js                   # Request validation schemas
+├── .env                           # Local secrets (gitignored)
+├── .example.env                   # Copy me → .env and fill in values
 ├── .gitignore
 ├── .prettierrc
 ├── .prettierignore
@@ -112,100 +151,127 @@ Project-Management-Backend/
 └── README.md
 ```
 
-## 🔧 Installation & Setup
+---
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or later)
-- [MongoDB](https://www.mongodb.com/) (local instance or MongoDB Atlas cluster)
+## 🚀 Quick Start
 
-### Steps
+Get the server running in under a minute:
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/MahidharBoppana/Project-Management-Backend.git
-   cd Project-Management-Backend
-   ```
+<details>
+<summary><b>1️⃣ Clone the repository</b></summary>
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```bash
+git clone https://github.com/MahidharBoppana/Project-Management-Backend.git
+cd Project-Management-Backend
+```
+</details>
 
-3. **Configure environment variables**
+<details>
+<summary><b>2️⃣ Install dependencies</b></summary>
 
-   Copy the example below into a `.env` file in the project root and fill in your values:
+```bash
+npm install
+```
+</details>
 
-   ```env
-   PORT=3000
+<details>
+<summary><b>3️⃣ Configure environment variables</b></summary>
 
-   # MongoDB
-   MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/<dbname>?retryWrites=true&w=majority
+Copy the example env file and edit it with your values:
 
-   # CORS
-   CORS_ORIGIN=http://localhost:5173
+```bash
+cp .example.env .env
+```
 
-   # JWT
-   ACCESS_TOKEN_SECRET=your_access_token_secret
-   ACCESS_TOKEN_EXPIRY=1d
-   REFRESH_TOKEN_SECRET=your_refresh_token_secret
-   REFRESH_TOKEN_EXPIRY=10d
+Then open `.env` and fill in at minimum:
 
-   # Password reset frontend URL
-   FORGOT_PASSWORD_REDIRECT_URL=http://localhost:5173/reset-password
+- `MONGO_URI` — your MongoDB connection string (required)
+- `ACCESS_TOKEN_SECRET` & `REFRESH_TOKEN_SECRET` — random strings (required)
+- `MAILTRAP_*` — Mailtrap credentials (required for email features)
 
-   # Email (Nodemailer / Mailgen)
-   SMTP_HOST=smtp.example.com
-   SMTP_PORT=587
-   SMTP_USER=your_email@example.com
-   SMTP_PASS=your_email_password
-   FROM_EMAIL=your_email@example.com
-   ```
+<details>
+<summary><b>💡 Generate strong JWT secrets</b></summary>
 
-4. **Start the server**
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+Run twice — once for `ACCESS_TOKEN_SECRET`, once for `REFRESH_TOKEN_SECRET`.
+</details>
+</details>
 
-   Development (with auto-reload via nodemon):
-   ```bash
-   npm run dev
-   ```
+<details>
+<summary><b>4️⃣ Start the server</b></summary>
 
-   Production:
-   ```bash
-   npm start
-   ```
+Development (auto-restarts on file changes via nodemon):
 
-   The server will run on `http://localhost:3000` (or the `PORT` you set).
+```bash
+npm run dev
+```
+
+Production:
+
+```bash
+npm start
+```
+
+The server starts on `http://localhost:3000` (or your `PORT`).  
+Base API path: `http://localhost:3000/api/v1`
+</details>
+
+---
 
 ## 🔐 Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `PORT` | Server port | No (default `3000`) |
-| `MONGODB_URI` | MongoDB connection string | Yes |
-| `CORS_ORIGIN` | Allowed CORS origins (comma-separated) | No (default `http://localhost:5173`) |
-| `ACCESS_TOKEN_SECRET` | Secret for signing access tokens | Yes |
-| `ACCESS_TOKEN_EXPIRY` | Access token expiry (e.g. `1d`) | No |
-| `REFRESH_TOKEN_SECRET` | Secret for signing refresh tokens | Yes |
-| `REFRESH_TOKEN_EXPIRY` | Refresh token expiry (e.g. `10d`) | No |
-| `FORGOT_PASSWORD_REDIRECT_URL` | Frontend URL for password reset | No |
-| `SMTP_HOST` / `SMTP_PORT` | Outgoing mail server | No (for email features) |
-| `SMTP_USER` / `SMTP_PASS` | SMTP credentials | No |
-| `FROM_EMAIL` | Sender email address | No |
+Copy `.example.env` → `.env` and set these values:
+
+| Variable | Description | Required | Example |
+|----------|-------------|----------|---------|
+| `PORT` | Server port | No | `3000` |
+| `SERVER_URL` | Public URL used for attachment links | No | `http://localhost:3000` |
+| `CORS_ORIGIN` | Allowed CORS origins (comma-separated) | No | `http://localhost:5173` |
+| `MONGO_URI` | MongoDB connection string | **Yes** | `mongodb+srv://...` |
+| `ACCESS_TOKEN_SECRET` | Secret to sign access tokens | **Yes** | random string |
+| `ACCESS_TOKEN_EXPIRY` | Access token lifetime | No | `5m` |
+| `REFRESH_TOKEN_SECRET` | Secret to sign refresh tokens | **Yes** | random string |
+| `REFRESH_TOKEN_EXPIRY` | Refresh token lifetime | No | `1d` |
+| `FORGOT_PASSWORD_REDIRECT_URL` | Frontend URL for password reset links | No | `http://localhost:3000/reset-password` |
+| `MAILTRAP_SMTP_HOST` | Outgoing mail host | No (email features) | `sandbox.smtp.mailtrap.io` |
+| `MAILTRAP_SMTP_PORT` | SMTP port | No | `2525` |
+| `MAILTRAP_SMTP_USER` | SMTP username | No | `...` |
+| `MAILTRAP_SMTP_PASS` | SMTP password | No | `...` |
+| `FROM_EMAIL` | Sender email address | No | `mail.taskmanager@example.com` |
+
+> 🔒 `.env` is gitignored. Never commit real credentials. Use `.example.env` as the template for teammates.
+
+---
 
 ## ▶️ Running the Server
 
 ```bash
-# Development (auto-restarts on file changes)
+# Development (auto-reload)
 npm run dev
 
 # Production
 npm start
 ```
 
+Console output:
+```
+Connected to MongoDB
+Example app listing on port http://localhost:3000
+```
+
+Visit `http://localhost:3000` to see the welcome message, or  
+`http://localhost:3000/api/v1/healthecheck` for the health check.
+
+---
+
 ## 📬 API Endpoints
 
 Base URL: `http://localhost:3000/api/v1`
 
-All responses follow the `ApiResponse` format:
+All successful responses follow the `ApiResponse` format:
+
 ```json
 {
   "success": true,
@@ -219,86 +285,172 @@ All responses follow the `ApiResponse` format:
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/healthecheck` | Server health check | ❌ |
+| GET | `/healthecheck` | Server health status | ❌ |
 
-### Authentication
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/auth/register` | Register a new user (sends verification email) | ❌ |
-| POST | `/auth/login` | Login & receive access/refresh cookies | ❌ |
-| GET | `/auth/verify-email/:verificationToken` | Verify email address | ❌ |
-| POST | `/auth/refresh-token` | Refresh access token | ❌ |
-| POST | `/auth/forgot-password` | Send password reset email | ❌ |
-| POST | `/auth/reset-password/:resetToken` | Reset password with token | ❌ |
-| POST | `/auth/logout` | Logout (clear cookies) | ✅ |
-| POST | `/auth/current-user` | Get authenticated user profile | ✅ |
-| POST | `/auth/change-password` | Change password (old + new) | ✅ |
-| POST | `/auth/resend-email-verification` | Resend verification email | ✅ |
-
-### Project Management
-
-> The project controllers exist under `src/controllers/project.controller.js`. Routes are not yet mounted in `src/app.js` — mount them under `/api/v1/projects` before use.
+### Authentication (`/api/v1/auth`)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/projects` | List projects for current user | ✅ |
-| GET | `/projects/:projectId` | Get a single project | ✅ |
-| POST | `/projects` | Create a project | ✅ |
-| PUT/PATCH | `/projects/:projectId` | Update a project | ✅ |
-| DELETE | `/projects/:projectId` | Delete a project | ✅ |
-| POST | `/projects/:projectId/members` | Add a member to a project | ✅ |
-| GET | `/projects/:projectId/members` | List project members | ✅ |
-| PUT/PATCH | `/projects/:projectId/members/:userId` | Update a member's role | ✅ |
-| DELETE | `/projects/:projectId/members/:userId` | Remove a member | ✅ |
+| POST | `/register` | Register user + send verification email | ❌ |
+| POST | `/login` | Login, set access & refresh cookies | ❌ |
+| GET | `/verify-email/:verificationToken` | Verify email address | ❌ |
+| POST | `/refresh-token` | Issue a new access token | ❌ |
+| POST | `/forgot-password` | Send password-reset email | ❌ |
+| POST | `/reset-password/:resetToken` | Reset password with token | ❌ |
+| POST | `/logout` | Clear auth cookies | ✅ |
+| POST | `/current-user` | Get authenticated user profile | ✅ |
+| POST | `/change-password` | Change password (old + new) | ✅ |
+| POST | `/resend-email-verification` | Resend verification email | ✅ |
 
-### Example: Register
+### Projects (`/api/v1/projects`)
 
-**Request**
-```http
-POST /api/v1/auth/register
-Content-Type: application/json
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/` | List projects for current user | ✅ |
+| POST | `/` | Create a project | ✅ |
+| GET | `/:projectId` | Get a single project | ✅ |
+| PUT/PATCH | `/:projectId` | Update a project (Admin) | ✅ |
+| DELETE | `/:projectId` | Delete a project (Admin) | ✅ |
+| POST | `/:projectId/members` | Add a member to a project (Admin) | ✅ |
+| GET | `/:projectId/members` | List project members | ✅ |
+| PUT/PATCH | `/:projectId/members/:userId` | Update a member's role (Admin) | ✅ |
+| DELETE | `/:projectId/members/:userId` | Remove a member (Admin) | ✅ |
 
-{
-  "username": "johndoe",
-  "email": "john@example.com",
-  "password": "securePassword123",
-  "role": "member"
-}
+### Tasks (`/api/v1/tasks`)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/:projectId` | List tasks in a project | ✅ |
+| POST | `/:projectId` | Create a task (Admin / Project Admin) | ✅ |
+| GET | `/:projectId/t/:taskId` | Get task details | ✅ |
+| PUT/PATCH | `/:projectId/t/:taskId` | Update a task (Admin / Project Admin) | ✅ |
+| DELETE | `/:projectId/t/:taskId` | Delete a task (Admin / Project Admin) | ✅ |
+| POST | `/:projectId/t/:taskId/subtasks` | Create a subtask (Admin / Project Admin) | ✅ |
+| PUT/PATCH | `/:projectId/st/:subTaskId` | Update a subtask | ✅ |
+| DELETE | `/:projectId/st/:subTaskId` | Delete a subtask (Admin / Project Admin) | ✅ |
+
+### Notes (`/api/v1/notes`)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/:projectId` | List project notes | ✅ |
+| POST | `/:projectId` | Create a note (Admin) | ✅ |
+| GET | `/:projectId/n/:noteId` | Get note details | ✅ |
+| PUT/PATCH | `/:projectId/n/:noteId` | Update a note (Admin) | ✅ |
+| DELETE | `/:projectId/n/:noteId` | Delete a note (Admin) | ✅ |
+
+---
+
+## 🧪 Try It (cURL Examples)
+
+<details>
+<summary><b>Register a new user</b></summary>
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "johndoe",
+    "email": "john@example.com",
+    "password": "securePassword123",
+    "role": "member"
+  }'
+```
+</details>
+
+<details>
+<summary><b>Login (returns access + refresh cookies)</b></summary>
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{"email":"john@example.com","password":"securePassword123"}'
 ```
 
-**Response**
+Use `-c cookies.txt` to save cookies and `-b cookies.txt` to send them on secured requests.
+</details>
+
+<details>
+<summary><b>Get current user (secured route)</b></summary>
+
+```bash
+curl -X GET http://localhost:3000/api/v1/auth/current-user \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -b cookies.txt
+```
+</details>
+
+<details>
+<summary><b>Create a project</b></summary>
+
+```bash
+curl -X POST http://localhost:3000/api/v1/projects \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -b cookies.txt \
+  -d '{"name":"Website Redesign","description":"Q3 company website rebuild"}'
+```
+</details>
+
+---
+
+## 🔑 Roles & Permissions
+
+Three-tier role system (`src/utils/constants.js`):
+
+| Feature | Admin | Project Admin | Member |
+|---------|-------|---------------|--------|
+| Create / update / delete project | ✅ | ❌ | ❌ |
+| Manage project members | ✅ | ❌ | ❌ |
+| Create / update / delete tasks | ✅ | ✅ | ❌ |
+| View tasks | ✅ | ✅ | ✅ |
+| Create / delete subtasks | ✅ | ✅ | ❌ |
+| Update subtask status | ✅ | ✅ | ✅ |
+| Create / update / delete notes | ✅ | ❌ | ❌ |
+| View notes | ✅ | ✅ | ✅ |
+
+Task statuses: `todo` → `in_progress` → `done`
+
+---
+
+## 📦 Response & Error Format
+
+**Success:**
 ```json
 {
   "success": true,
   "statusCode": 200,
-  "message": "user registered successfully and verification has been sent on your email",
-  "data": {
-    "user": { "_id": "...", "username": "johndoe", "email": "john@example.com", ... }
-  }
+  "message": "user registered successfully",
+  "data": { "user": { ... } }
 }
 ```
 
-## 🧪 Testing
-
-There is no test suite configured yet. You can test the API manually with [Postman](https://www.postman.com/), [Insomnia](https://insomnia.rest/), or `curl`.
-
-Example with curl:
-```bash
-curl -X POST http://localhost:3000/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"john@example.com","password":"securePassword123"}'
+**Error:**
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "message": "Validation error",
+  "errors": [ ... ]
+}
 ```
+
+---
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
 1. Fork the repo
-2. Create your feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m "feat: add your feature"`)
-4. Push to the branch (`git push origin feature/your-feature`)
+2. Create your feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m "feat: add your feature"`
+4. Push to the branch: `git push origin feature/your-feature`
 5. Open a Pull Request
+
+Please follow the existing code style (Prettier is configured) and keep env secrets out of commits.
+
+---
 
 ## 📄 License
 
@@ -306,4 +458,16 @@ This project is licensed under the [ISC License](LICENSE).
 
 ---
 
+## 👤 Author
+
 Built by [Mahidhar Boppana](https://github.com/MahidharBoppana)
+
+---
+
+<details>
+<summary><b>📌 Notes for maintainers</b></summary>
+
+- Routes are mounted in `src/app.js` under `/api/v1`. The health-check route is mounted at `/api/v1/healthecheck` (note the spelling as it appears in `app.js`).
+- Task attachments are stored in `public/images/` and referenced via `SERVER_URL` — this folder is gitignored except for `.gitkeep`.
+- Email features require Mailtrap SMTP credentials; without them emails fail silently (see `src/utils/mail.js`).
+</details>
