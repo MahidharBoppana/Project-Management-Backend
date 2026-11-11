@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { AvailableUserRole } from "../utils/constants.js";
+import { AvailableUserRole, AvailableTaskStatues } from "../utils/constants.js";
 
 const userRegisterValidator = () => {
   return [
@@ -74,6 +74,51 @@ const addMemberToProjectValidator = () => {
   ];
 };
 
+const createTaskValidator = () => {
+  return [
+    body("title").notEmpty().withMessage("Title is required"),
+    body("description").optional(),
+    body("status")
+      .notEmpty()
+      .withMessage("Status is required")
+      .isIn(AvailableTaskStatues)
+      .withMessage("Status is invalid"),
+    body("assignedTo").optional().isMongoId().withMessage("Invalid user ID"),
+  ];
+};
+
+const updateTaskValidator = () => {
+  return [
+    body("title").optional().notEmpty().withMessage("Title is required"),
+    body("description").optional(),
+    body("status")
+      .optional()
+      .isIn(AvailableTaskStatues)
+      .withMessage("Status is invalid"),
+    body("assignedTo").optional().isMongoId().withMessage("Invalid user ID"),
+  ];
+};
+
+const createSubTaskValidator = () => {
+  return [
+    body("title").notEmpty().withMessage("Title is required"),
+    body("isCompleted")
+      .optional()
+      .isBoolean()
+      .withMessage("isCompleted must be a boolean value"),
+  ];
+};
+
+const updateSubTaskValidator = () => {
+  return [
+    body("title").optional().notEmpty().withMessage("Title is required"),
+    body("isCompleted")
+      .optional()
+      .isBoolean()
+      .withMessage("isCompleted must be a boolean value"),
+  ];
+};
+
 export {
   userRegisterValidator,
   userLoginValidator,
@@ -82,4 +127,8 @@ export {
   userResetForgotPasswordValidator,
   createProjectValidator,
   addMemberToProjectValidator,
+  createTaskValidator,
+  updateTaskValidator,
+  createSubTaskValidator,
+  updateSubTaskValidator,
 };
