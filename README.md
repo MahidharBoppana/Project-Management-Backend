@@ -435,21 +435,6 @@ Task statuses: `todo` → `in_progress` → `done`
   "errors": [ ... ]
 }
 ```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
-1. Fork the repo
-2. Create your feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m "feat: add your feature"`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Open a Pull Request
-
-Please follow the existing code style (Prettier is configured) and keep env secrets out of commits.
-
 ---
 
 ## 📄 License
